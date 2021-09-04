@@ -61,8 +61,4 @@ https://github.com/SymbiFlow/symbiflow-examples/blob/master/common/Makefile#L52
 
 色々といじって、コンピュータの全てを自分で操作してみよう。
 
-
-次回インストール編
-
-
-
+https://zenn.dev/tanakmura/articles/litex2_d64c6905903aff 第2回
