@@ -4,6 +4,4 @@ type: "tech"
 topics: ["FPGA"]
 published: true
 ---
-
-
-
+# おはよう
