@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -e -o pipefail
 
 cd images
@@ -21,7 +23,7 @@ function extract() {
 if test "$1" == "" -o "$2" == ""
 then
     echo 'usage: setup.sh <litex path> <ttyUSB path>'
-    echo '  ex) setup.sh /usr/src/linux-linux-on-litex-vexriscv /dev/ttyUSB1'
+    echo '  ex) ./setup.sh /usr/src/linux-linux-on-litex-vexriscv /dev/ttyUSB1'
     exit 1
 fi
 

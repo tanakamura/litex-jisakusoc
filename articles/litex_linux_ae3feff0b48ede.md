@@ -2,7 +2,7 @@
 title: "LiteXではじめる自作SoC(3) Linuxの動くSoCを自作する"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["FPGA", "Linux"]
-published: false
+published: true
 ---
 
 https://zenn.dev/tanakmura/articles/litex2_d64c6905903aff 第2回
@@ -45,9 +45,9 @@ settings64.sh を実行しておく。
 (あ、今見たらVexRISCVを作るためにsbtがいるっぽい。sbtもインストールする必要がある。私は詳しくないのでうまいことなんとかやっておいて。あとdtcも必要だった。前回のところに追記しておいた)
 
 
-しばらく待てば、FPGAに入れるbitstreamができあがる。
+しばらく待てば、FPGAに入れるbitstreamが`build/arty/gateware/arty.bit`に作られる。
 
-このbitstreamには、RISC-V 用の初期化プログラム(litexではbiosと呼んでいるので、以後biosと呼ぶ)が書かれている。
+このbitstreamには、RISC-V 用の初期化プログラム(litexではbiosと呼んでいるので、以後biosと呼ぶ)が含まれていて、このbitstreamをFPGAに書けば、ブートに必要な初期化プログラムがRISC-V上で動くようになっている。
 
 bios は、UART に出力を出すので、とりあえず bitstream を書いて、UART から調子を見てみよう。
 
@@ -55,8 +55,12 @@ bitstream を書くのは、OpenOCD を使うが、make.py は OpenOCD を起動
 
     (xc7) $ ./make.py --board=arty --load
 
-
 うまくいっていれば、Arty が起動して、LEDが煌めく様子が確認できるだろう。
+
+
+`--load`は電源が切れるまでの一時的なものになる、`--flash`すれば、bitstreamがSPI FLASHに書き込まれて、次回からは電源を入れるだけで起動するようになる。
+
+    (xc7) $ ./make.py --board=arty --flash
 
 
 何も変更しないで、Arty用にbitstreamを作った場合は、UARTは1e6Hz (1MHz) で起動する。これを見てみよう。
@@ -69,7 +73,7 @@ bitstream を書くのは、OpenOCD を使うが、make.py は OpenOCD を起動
 
     litex> 
 
-ここに help と入力すれば、biso で使えるコマンド一覧が表示される。
+ここに help と入力すれば、bios で使えるコマンド一覧が表示される。
 
 ```
 litex> help
@@ -119,11 +123,11 @@ sdcard_write             - Write SDCard block
 
 litex on Arty のbiosは、
 
-- SDCard
+- SDカード
 - UART
 - TFTP
 
-からLinuxのカーネルを取得してブートする機能を持っている。UARTは遅いので、SDCardやTFTPからブートするほうがよいのだが、セットアップが面倒なので、ここはUARTからカーネルを起動しよう。
+からLinuxのカーネルを取得してブートする機能を持っている。UARTは遅いので、SDカードやTFTPからブートするほうがよいのだが、ハードウェアのセットアップが必要なので、ここはUARTからカーネルを起動しよう。
 
 litex には、bios からのUART出力を監視して、適切なプロトコルでデータを送信する `litex_term` というツールがある。`minicom`のかわりにこの`litex_term`を使って、UARTを操作すれば、ブート途中で Linux kernel を送信し、そこからブートすることができる(`litex_term` を終了するときは、Ctrl-C を2回押す)。litexを正しくインストールしていれば、$HOME/.local/bin にインストールされている。
 
@@ -173,11 +177,27 @@ UARTは、1Mhzで動いていて遅いので、Linux + rootfs をロードする
 
 また、make.py が生成する dts とビルド済みカーネルに含まれるイーサネットドライバが見るdtsでバージョンのずれがあって、そのままではイーサネットが使えないようだ。
 
-arty.dtsに含まれる、`litex,rx-slots`、 `litex,tx-slots` を、`rx-fifo-depth`、`tx-fifo-depth`に書きかえておこう。
+arty.dtsに含まれる、`litex,rx-slots`、 `litex,tx-slots` を、`rx-fifo-depth`、`tx-fifo-depth`に書きかえておこう。これでイーサネットも使えるようになるはずだ。
 
 
+以上の手順をまとめたスクリプトは以下になる。
+
+https://github.com/tanakamura/litex-jisakusoc/blob/main/src/setup_linux_root/setup.sh
+
+    $ ./setup.sh /usr/src/linux-linux-on-litex-vexriscv /dev/ttyUSB1
+    $ # /usr/src/linux-linux-on-litex-vexriscv は make.py を実行したディレクトリ
+
+のようにすれば、上の手順を実行した状態で、litex_termが起動する。このlitex_termのコンソールから、rebootコマンドなどを使って再起動すればLinuxが起動する。
 
 
-Linux が起動したらあとは好きなように使おう。
+Linux が起動したらあとは好きなように使おう。ここで使ったrootfsには最低限のものしか入っていないので、buildrootが使える人は、自分でrootfsを作ってみるのもよいかもしれない。
 
 
+さて、簡単ではあったが、Litexを使ってLinuxが動くSoCを作る手順を見ていった。
+
+ここで作ったSoCに含まれる部品は、全てソースが公開されていて、その気になれば起こった現象を自分で完全に解析することが可能なわけで、ブラックボックスがほとんど存在しないシステムが作れたと言えるだろう。
+
+
+とは言っても、`make.py` を実行しただけでは、何が起こってるのかはあまりわからないかもしれない。
+
+次回からは、自分でLitexを使ったスクリプトを作って、一個一個丹精込めてSoCを作っていってみよう。まず次はCPUからだ。(続く)
