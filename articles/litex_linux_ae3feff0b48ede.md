@@ -58,7 +58,10 @@ bitstream を書くのは、OpenOCD を使うが、make.py は OpenOCD を起動
 うまくいっていれば、Arty が起動して、LEDが煌めく様子が確認できるだろう。
 
 
-`--load`は電源が切れるまでの一時的なものになる、`--flash`すれば、bitstreamがSPI FLASHに書き込まれて、次回からは電源を入れるだけで起動するようになる。
+`--load`は電源が切れるまでの一時的なものになる。`--flash`すれば、bitstreamがSPI FLASHに書き込まれて、次回からは電源を入れるだけで起動するようになる。(注意:ArtyではSPIに書くためには多分ジャンパ14をはずす必要がある)
+
+SPI FLASHの中身が消えてよければ、`--flash`でbitstreamを書いておこう。
+
 
     (xc7) $ ./make.py --board=arty --flash
 
