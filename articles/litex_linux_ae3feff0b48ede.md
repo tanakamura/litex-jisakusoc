@@ -16,7 +16,7 @@ https://github.com/litex-hub/linux-on-litex-vexriscv
 
 Linuxが動くSoCを作るようのスクリプトがあって、これを実行するだけで作れるようになっている。スクリプトを動かすだけでLinuxが動くSoCが作れるのだ(大事なことなので2回書いた)
 
-とりあえず動くというレベルではなくて、Arty の場合は、MMUが付いたSMP(マルチコア)のRISC-Vが100MHzで動いて、DRAMを使えて、Ethernet経由のTCP/IPで通信できて、QSPI Flash データが保存できる、ちゃんとしたLinuxが動く。Pmod を付ければ SD Card も使える(私は確認してないが)。
+とりあえず動くというレベルではなくて、Arty の場合は、MMUが付いたSMP(マルチコア)のRISC-Vが100MHzで動いて、DRAMを使えて、Ethernet経由のTCP/IPで通信できて、QSPI Flash にデータが保存できる、ちゃんとしたLinuxが動く。Pmod を付ければ SD Card も使える(私は確認してないが)。
 
 
 手元で試した限りだと、そのままではSymbiFlowで作るといくつか機能が使えなくて合成に失敗するのと、なんか100MHzが動かない気がしたので今回はVivadoでやっていく。
