@@ -147,4 +147,9 @@ SDRAM:          262144KiB 16-bit @ 640MT/s (CL-7 CWL-5)
 `miniterm`を終了するには、`Ctrl + ]`を押す。
 
 
+見やすい位置にあるボードを使えば、
+
 https://gw.acri.c.titech.ac.jp/wp/manual/gallery
+
+ここから見れるArtyのストリームからLEDが光っているのが見えるかもしれない。(残念ながら私が試したvs002はどれなのかわからなかった)
+
