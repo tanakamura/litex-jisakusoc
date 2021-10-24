@@ -115,3 +115,36 @@ called Tcl_FindHashEntry on deleted table
 (最後にcore dumpしているが、まあXilinxのツールなので…)
 
 
+成功していれば、UARTにlitexのbiosのコンソールが出るはずだ。ACRiルームのサーバーには`miniterm`が入っているのでこれを使ってuartを観察しよう。
+
+```
+$ miniterm --raw /dev/ttyUSB1 1000000
+```
+などすれば、FPGAのUARTに1MHzで接続できる。エスケープシーケンスが`miniterm`に取られないようにするために、`--raw`を付けておく。
+
+
+```
+$ miniterm --raw /dev/ttyUSB1 1000000
+--- Miniterm on /dev/ttyUSB1  1000000,8,N,1 ---
+--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H ---
+ BIOS CRC passed (2f3c13ed)
+
+ Migen git sha1: 7507a2b
+ LiteX git sha1: 8fa4de5e
+
+--=============== SoC ==================--
+CPU:            VexRiscv SMP-LINUX @ 80MHz
+BUS:            WISHBONE 32-bit @ 4GiB
+CSR:            32-bit data
+ROM:            64KiB
+SRAM:           8KiB
+L2:             0KiB
+FLASH:          16384KiB
+SDRAM:          262144KiB 16-bit @ 640MT/s (CL-7 CWL-5)
+...
+```
+
+`miniterm`を終了するには、`Ctrl + ]`を押す。
+
+
+https://gw.acri.c.titech.ac.jp/wp/manual/gallery
