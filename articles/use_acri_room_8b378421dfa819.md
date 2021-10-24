@@ -69,6 +69,8 @@ Arty ではなくて、もっとでかいAlveoもかなり空いていて、見�
 
 # make.py で作ったビットストリームをFPGAに入れる
 
+(ディスク容量は25GBまでとのことなので、手元のPCで合成してファイルだけACRiルームのサーバーに持っていく方法を書いている。ACRiルームのサーバーで合成したほうがいいかもしれない)
+
 https://zenn.dev/tanakmura/articles/litex_linux_ae3feff0b48ede.md
 
 これで作ったbitstreamを使ってみよう。リンク先の解説では、`--board=arty` で作っていたが、Arty A7向けに作るときは`--board=arty_a7` にする。
@@ -76,6 +78,8 @@ https://zenn.dev/tanakmura/articles/litex_linux_ae3feff0b48ede.md
     $ ./make.py --board=arty_a7 --build
 
 (なお、いまのところ違いはないようなので、気にしなくていいかもしれない)
+
+https://gw.acri.c.titech.ac.jp/wp/manual/how-to-reserve
 
 
 合成が終わると、`build/arty/gateware/arty.bit` に bitstream ができるのでなんとかしてACRiルームのサーバーにコピーする。
