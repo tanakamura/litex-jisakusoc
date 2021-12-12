@@ -1,24 +1,17 @@
-from litex.soc.integration.soc import SoC
-from litex.build.xilinx import XilinxPlatform
-
-io = [
-    ("clk100",    0, Pins("E3"), IOStandard("LVCMOS33")),
-    ("cpu_reset", 0, Pins("C2"), IOStandard("LVCMOS33"))
-    ]
-
-class Platform(XilinxPlatform):
-    def __init__(self, toolchain="symbiflow"):
-        XilinxPlatform.__init__(self, "xc7a35ticsg324-1L", io, [], toolchain=toolchain)
-    def do_finalize(self, fragment):
-        XilinxPlatform.do_finalize(self, fragment)
-        self.add_period_constraint(self.lookup_request("clk100", loose=True), 1e9/100e6)
-
+import argparse
+from litex_boards.platforms import arty
+from litex.soc.integration.builder import Builder, builder_args, builder_argdict
+from litex.soc.integration.soc_core import SoCCore, soc_core_args, soc_core_argdict
+from litex.soc.integration.soc import SoC,LiteXSoC
+from litex.soc.integration.export import get_csr_csv, get_csr_json, get_csr_header
+from litex.build.xilinx.vivado import vivado_build_args, vivado_build_argdict
+from litex.soc.cores import uart
 
 def main():
-    platform = arty.Platform(variant="a7-35", toolchain="symbiflow")
-    x = SoC(platform,  sys_clk_freq=1e6)
-    x.irq.enable()
+    parser = argparse.ArgumentParser(description="gentest")
 
+    platform = arty.Platform(variant="a7-35", toolchain="symbiflow")
+    x = SoC(platform,  sys_clk_freq=25e6)
     x.add_rom("boot_rom", 0, 4096, contents=[0,1,2,3])
 
     # uart
@@ -27,25 +20,11 @@ def main():
 
     x.add_controller("ctrl")
     x.mem_map['rom'] = 0
-    x.add_cpu('serv')
-
-    x.irq.add("uart")
-
-    from litex.soc.cores.timer import Timer
-    x.submodules.timer0 = Timer()
-    x.irq.add('timer0')
-
-    # led
-    # x.submodules.uartbone_phy = uart.UARTPHY(x.platform.request('serial'), 1e6, 115200)
-    # x.submodules.uartbone = uart.UARTBone(phy=x.uartbone_phy, clk_freq=1e6)
-    # x.bus.add_master(name="uartbone", master=x.uartbone.wishbone)
-
-
-    #x.do_finalize()
+    x.add_cpu('picorv32')
 
     x.build(run=False, build_name="mysoc")
-    json = get_csr_json(x.csr_regions, x.constants)
-    print(json)
+    header = get_csr_json(x.csr_regions, x.constants)
+    print(header)
 
 
 if __name__ == "__main__":
